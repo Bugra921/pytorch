@@ -5,27 +5,35 @@ import torchvision.transforms as transforms
 from PIL import Image
 import numpy as np
 import cv2
-import io
 from io import BytesIO
-# Modelinizi tanımlayın
+
+# Model mimarisini tanımlayın
 class MyModel(nn.Module):
     def __init__(self):
         super(MyModel, self).__init__()
-        # Model mimarinizi burada tanımlayın
+        self.conv1 = nn.Conv2d(in_channels=3, out_channels=64, kernel_size=3, stride=1, padding=1)
+        self.conv2 = nn.Conv2d(in_channels=64, out_channels=128, kernel_size=3, stride=1, padding=1)
+        self.fc1 = nn.Linear(128 * 56 * 56, 256)  # 224x224 giriş boyutu olduğunu varsayarsak
+        self.fc2 = nn.Linear(256, 3)  # 3 sınıf olduğunu varsayarsak
 
     def forward(self, x):
-        # İleri doğru geçiş işlemini burada tanımlayın
+        x = F.relu(self.conv1(x))
+        x = F.max_pool2d(x, 2)
+        x = F.relu(self.conv2(x))
+        x = F.max_pool2d(x, 2)
+        x = torch.flatten(x, 1)
+        x = F.relu(self.fc1(x))
+        x = self.fc2(x)
         return x
-
-# Modeli yükleyin
-model_path = "best_model.pth"
-model = MyModel()
-model.load_state_dict(torch.load(model_path))
-model.eval()
 
 # Cihazı ayarlayın (GPU varsa kullan, yoksa CPU kullan)
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+
+# Modeli oluşturun ve yükleyin
+model = MyModel()
+model.load_state_dict(torch.load("best_model.pth", map_location=device))
 model.to(device)
+model.eval()
 
 # Görüntüyü işleme fonksiyonu
 def preprocess_image(img):
@@ -55,7 +63,7 @@ gallery_input = st.file_uploader('VEYA Fasulye Fotoğrafı Ekleyin', accept_mult
 
 if camera_input is not None:
     img_bytes = camera_input.getvalue()
-    img = Image.open(io.BytesIO(img_bytes))
+    img = Image.open(BytesIO(img_bytes))
     img_cv2 = np.array(img)
 
     predicted_class = predict_image(img_cv2)
@@ -63,7 +71,7 @@ if camera_input is not None:
 
 elif gallery_input is not None:
     img_bytes = gallery_input.getvalue()
-    img = Image.open(io.BytesIO(img_bytes))
+    img = Image.open(BytesIO(img_bytes))
     img_cv2 = np.array(img)
 
     predicted_class = predict_image(img_cv2)
