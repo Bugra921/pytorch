@@ -8,7 +8,7 @@ import cv2
 from io import BytesIO
 
 # Sınıf isimlerini tanımlayın
-CLASS_NAMES = ["angular_leaf_spot", "bean_rust", "healthy"]
+CLASS_NAMES = ["healthy", "angular_leaf_spot", "bean_rust"]
 
 class_size = 3
 model = models.efficientnet_v2_s(weights='DEFAULT')
@@ -39,8 +39,9 @@ def predict_image(img):
     img = img.to(device)
     with torch.no_grad():
         outputs = model(img)
-    _, predicted = torch.max(outputs, 1)
-    return predicted.cpu().numpy()[0]
+    probabilities = torch.nn.functional.softmax(outputs, dim=1)
+    confidence, predicted = torch.max(probabilities, 1)
+    return predicted.cpu().numpy()[0], confidence.cpu().numpy()[0]
 
 # Streamlit arayüzü
 st.title("Fasulye Hastalığı Tespit Uygulaması")
@@ -53,16 +54,18 @@ if camera_input is not None:
     img = Image.open(BytesIO(img_bytes))
     img_cv2 = np.array(img)
 
-    predicted_class = predict_image(img_cv2)
-    st.write(f"Tahmin Edilen Sınıf: {CLASS_NAMES[predicted_class]}")  # Sınıf ismini yazdır
+    predicted_class, confidence = predict_image(img_cv2)
+    st.write(f"Tahmin Edilen Sınıf: {CLASS_NAMES[predicted_class]}")
+    st.write(f"İnanılırlık Yüzdesi: {confidence*100:.2f}%")
 
 elif gallery_input is not None:
     img_bytes = gallery_input.getvalue()
     img = Image.open(BytesIO(img_bytes))
     img_cv2 = np.array(img)
 
-    predicted_class = predict_image(img_cv2)
-    st.write(f"Tahmin Edilen Sınıf: {CLASS_NAMES[predicted_class]}")  # Sınıf ismini yazdır
+    predicted_class, confidence = predict_image(img_cv2)
+    st.write(f"Tahmin Edilen Sınıf: {CLASS_NAMES[predicted_class]}")
+    st.write(f"İnanılırlık Yüzdesi: {confidence*100:.2f}%")
 
 else:
     st.write("Lütfen bir resim yükleyin veya kamera kullanarak bir resim çekin.")
