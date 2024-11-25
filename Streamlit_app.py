@@ -7,6 +7,9 @@ import numpy as np
 import cv2
 from io import BytesIO
 
+# Sınıf isimlerini tanımlayın
+CLASS_NAMES = ["angular_leaf_spot", "bean_rust", "healthy"]
+
 class_size = 3
 model = models.efficientnet_v2_s(weights='DEFAULT')
 model.classifier[1] = torch.nn.Linear(1280, class_size)
@@ -51,7 +54,7 @@ if camera_input is not None:
     img_cv2 = np.array(img)
 
     predicted_class = predict_image(img_cv2)
-    st.write(f"Tahmin Edilen Sınıf: {predicted_class}")
+    st.write(f"Tahmin Edilen Sınıf: {CLASS_NAMES[predicted_class]}")  # Sınıf ismini yazdır
 
 elif gallery_input is not None:
     img_bytes = gallery_input.getvalue()
@@ -59,7 +62,7 @@ elif gallery_input is not None:
     img_cv2 = np.array(img)
 
     predicted_class = predict_image(img_cv2)
-    st.write(f"Tahmin Edilen Sınıf: {predicted_class}")
+    st.write(f"Tahmin Edilen Sınıf: {CLASS_NAMES[predicted_class]}")  # Sınıf ismini yazdır
 
 else:
     st.write("Lütfen bir resim yükleyin veya kamera kullanarak bir resim çekin.")
