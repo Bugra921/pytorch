@@ -5,7 +5,8 @@ import torchvision.transforms as transforms
 from PIL import Image
 import numpy as np
 import cv2
-
+import io
+from io import BytesIO
 # Modelinizi tanımlayın
 class MyModel(nn.Module):
     def __init__(self):
@@ -54,7 +55,7 @@ gallery_input = st.file_uploader('VEYA Fasulye Fotoğrafı Ekleyin', accept_mult
 
 if camera_input is not None:
     img_bytes = camera_input.getvalue()
-    img = Image.open(BytesIO(img_bytes))
+    img = Image.open(io.BytesIO(img_bytes))
     img_cv2 = np.array(img)
 
     predicted_class = predict_image(img_cv2)
@@ -62,7 +63,7 @@ if camera_input is not None:
 
 elif gallery_input is not None:
     img_bytes = gallery_input.getvalue()
-    img = Image.open(BytesIO(img_bytes))
+    img = Image.open(io.BytesIO(img_bytes))
     img_cv2 = np.array(img)
 
     predicted_class = predict_image(img_cv2)
