@@ -8,7 +8,7 @@ import cv2
 from io import BytesIO
 
 # Sınıf isimlerini tanımlayın
-CLASS_NAMES = ["healthy", "angular_leaf_spot", "bean_rust"]
+CLASS_NAMES = ["angular_leaf_spot", "bean_rust", "healthy"]
 
 class_size = 3
 model = models.efficientnet_v2_s(weights='DEFAULT')
@@ -53,29 +53,20 @@ if camera_input is not None:
     img_bytes = camera_input.getvalue()
     img = Image.open(BytesIO(img_bytes))
     img_cv2 = np.array(img)
-    
-    img_cv2 = cv2.resize(img_cv2, (256,256))
-    img_batch = np.expand_dims(img_cv2, 0)
-    prediction = MODEL.predict(img_batch)
-    predicted_class = CLASS_NAMES[np.argmax(prediction[0])]
-    confidence = np.max(prediction[0])
-    st.title({
-        "class": predicted_class,
-        "confidence": float(confidence)
-    })
-elif gallery_input is not None and camera_input is None:
+
+    predicted_class, confidence = predict_image(img_cv2)
+    st.write(f"Tahmin Edilen Sınıf: {CLASS_NAMES[predicted_class]}")
+    st.write(f"İnanılırlık Yüzdesi: {confidence*100:.2f}%")
+
+elif gallery_input is not None:
     img_bytes = gallery_input.getvalue()
     img = Image.open(BytesIO(img_bytes))
     img_cv2 = np.array(img)
-    
-    img_cv2 = cv2.resize(img_cv2, (256,256))
-    img_batch = np.expand_dims(img_cv2, 0)
-    prediction = MODEL.predict(img_batch)
-    predicted_class = CLASS_NAMES[np.argmax(prediction[0])]
-    confidence = np.max(prediction[0])
-    st.title({
-        "class": predicted_class,
-        "confidence": float(confidence)
-    })
+
+    predicted_class, confidence = predict_image(img_cv2)
+    print(predicted_class)
+    st.write(f"Tahmin Edilen Sınıf: {CLASS_NAMES[predicted_class]}")
+    st.write(f"İnanılırlık Yüzdesi: {confidence*100:.2f}%")
+
 else:
     st.write("Lütfen bir resim yükleyin veya kamera kullanarak bir resim çekin.")
