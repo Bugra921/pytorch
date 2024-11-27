@@ -39,11 +39,11 @@ def predict_image(img):
     img = img.to(device)
     with torch.no_grad():
         outputs = model(img)
-        st.write(f"Tahmin Edilen Sınıf: {outputs}")
+        st.write(f"çktılar: {outputs}")
     probabilities = torch.nn.functional.softmax(outputs, dim=1)
     confidence, predicted = torch.max(probabilities, 1)
     st.write(f"Tahmin Edilen Sınıf: {predicted}")
-    return predicted.cpu().numpy()[0], confidence.cpu().numpy()[0]
+    return predicted.cpu().numpy()[1], confidence.cpu().numpy()[0]
 
 # Streamlit arayüzü
 st.title("Fasulye Hastalığı Tespit Uygulaması")
