@@ -8,7 +8,7 @@ import cv2
 from io import BytesIO
 
 # Sınıf isimlerini tanımlayın
-CLASS_NAMES = ["angular_leaf_spot", "bean_rust", "healthy"]
+CLASS_NAMES = ["healthy", "angular_leaf_spot", "bean_rust"]
 
 class_size = 3
 model = models.efficientnet_v2_s(weights='DEFAULT')
