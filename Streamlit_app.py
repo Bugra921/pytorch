@@ -41,8 +41,8 @@ def predict_image(img):
         outputs = model(img)
     probabilities = torch.nn.functional.softmax(outputs, dim=1)
     confidence, predicted = torch.max(probabilities, 1)
-    print(predicted.cpu().numpy()[0])
-    return predicted.cpu().numpy()[0], confidence.cpu().numpy()[0]
+    
+    return predicted.cpu().numpy(), confidence.cpu().numpy()[0]
 
 # Streamlit arayüzü
 st.title("Fasulye Hastalığı Tespit Uygulaması")
@@ -68,6 +68,7 @@ elif gallery_input is not None:
     print(predicted_class)
     st.write(predicted_class)
     st.write(f"Tahmin Edilen Sınıf: {[predicted_class]}")
+   
     st.write(f"İnanılırlık Yüzdesi: {confidence*100:.2f}%")
 
 else:
