@@ -39,8 +39,10 @@ def predict_image(img):
     img = img.to(device)
     with torch.no_grad():
         outputs = model(img)
+        st.write(f"Tahmin Edilen Sınıf: {outputs}")
     probabilities = torch.nn.functional.softmax(outputs, dim=1)
     confidence, predicted = torch.max(probabilities, 1)
+    st.write(f"Tahmin Edilen Sınıf: {predicted}")
     return predicted.cpu().numpy()[0], confidence.cpu().numpy()[0]
 
 # Streamlit arayüzü
