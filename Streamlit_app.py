@@ -66,7 +66,7 @@ elif gallery_input is not None:
     predicted_class, confidence = predict_image(img_cv2)
     print(predicted_class)
     st.write(predicted_class)
-    st.write(f"Tahmin Edilen Sınıf: {CLASS_NAMES[predicted_class]}")
+    st.write(f"Tahmin Edilen Sınıf: {[predicted_class]}")
     st.write(f"İnanılırlık Yüzdesi: {confidence*100:.2f}%")
 
 else:
