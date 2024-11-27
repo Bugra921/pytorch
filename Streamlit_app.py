@@ -41,6 +41,7 @@ def predict_image(img):
         outputs = model(img)
     probabilities = torch.nn.functional.softmax(outputs, dim=1)
     confidence, predicted = torch.max(probabilities, 1)
+    print(predicted.cpu().numpy()[0])
     return predicted.cpu().numpy()[0], confidence.cpu().numpy()[0]
 
 # Streamlit arayüzü
