@@ -9,9 +9,9 @@ from io import BytesIO
 # Konvolüsyon bloğu 
 def ConvBlock(in_channels, out_channels, pool=False): 
     layers = [nn.Conv2d(in_channels, out_channels, kernel_size=3, padding=1),
-               nn.BatchNorm2d(out_channels), nn.ReLU(inplace=True)]
+              nn.BatchNorm2d(out_channels), nn.ReLU(inplace=True)]
     if pool: 
-        layers.append(nn.MaxPool2d(2)) # 2x2 Pooling 
+        layers.append(nn.MaxPool2d(2))  # 2x2 Pooling
     return nn.Sequential(*layers)
 
 # Model tanımı
@@ -59,18 +59,19 @@ def preprocess_image(img):
     img = transform(img).unsqueeze(0)  # Batch boyutuna dönüştür
     return img
 
+# PNG'yi JPG'ye çeviren yardımcı fonksiyon
 def convert_png_to_jpg(img):
     if img.mode != 'RGB':
-        img = img.convert('RGB') 
-    output = BytesIO() 
-    img.save(output, format='JPEG') 
+        img = img.convert('RGB')
+    output = BytesIO()
+    img.save(output, format='JPEG')
     return Image.open(output)
-    # Tahmin yapma fonksiyonu def predict_image(img): 
+
 # Tahmin yapma fonksiyonu
 def predict_image(img):
-    if img.format == 'PNG':
+    if img.format == 'PNG' or img.format.lower() == 'png':
         img = convert_png_to_jpg(img)
-    img = preprocess_image(img)
+    img = preprocess_image(np.array(img))
     with torch.no_grad():
         outputs = model(img)
         probabilities = torch.nn.functional.softmax(outputs, dim=1)
@@ -81,7 +82,7 @@ def predict_image(img):
 st.title("Zehirli Mantar Tespit Uygulaması")
 
 camera_input = st.camera_input('Kameradan resim çek')
-gallery_input = st.file_uploader('VEYA Fasulye Fotoğrafı Ekleyin', accept_multiple_files=False)
+gallery_input = st.file_uploader('VEYA Mantar Fotoğrafı Ekleyin', accept_multiple_files=False)
 
 if camera_input is not None:
     img_bytes = camera_input.getvalue()
