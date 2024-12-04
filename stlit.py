@@ -59,8 +59,17 @@ def preprocess_image(img):
     img = transform(img).unsqueeze(0)  # Batch boyutuna dönüştür
     return img
 
+def convert_png_to_jpg(img):
+    if img.mode != 'RGB':
+        img = img.convert('RGB') 
+    output = BytesIO() 
+    img.save(output, format='JPEG') 
+    return Image.open(output)
+    # Tahmin yapma fonksiyonu def predict_image(img): 
 # Tahmin yapma fonksiyonu
 def predict_image(img):
+    if img.format == 'PNG':
+        img = convert_png_to_jpg(img)
     img = preprocess_image(img)
     with torch.no_grad():
         outputs = model(img)
