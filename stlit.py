@@ -87,18 +87,16 @@ gallery_input = st.file_uploader('VEYA Mantar Fotoğrafı Ekleyin', accept_multi
 if camera_input is not None:
     img_bytes = camera_input.getvalue()
     img = Image.open(BytesIO(img_bytes))
-    img_cv2 = np.array(img)
-
-    predicted_class, confidence = predict_image(img_cv2)
+    
+    predicted_class, confidence = predict_image(img)
     st.write(f"Tahmin Edilen Sınıf: {class_names[predicted_class]}")
     st.write(f"İnanılırlık Yüzdesi: {confidence*100:.2f}%")
 
 elif gallery_input is not None:
     img_bytes = gallery_input.getvalue()
     img = Image.open(BytesIO(img_bytes))
-    img_cv2 = np.array(img)
 
-    predicted_class, confidence = predict_image(img_cv2)
+    predicted_class, confidence = predict_image(img)
     st.write(f"Tahmin Edilen Sınıf: {class_names[predicted_class]}")
     st.write(f"İnanılırlık Yüzdesi: {confidence*100:.2f}%")
 
